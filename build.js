@@ -81,21 +81,40 @@ const storyPageCss = `
 .ep-card-title{font-family:'Noto Serif Telugu',serif;font-size:15px;color:var(--mist);margin:0 0 6px;}
 .ep-card-status{font-family:'Noto Sans Telugu',sans-serif;font-size:12px;color:var(--mist-dim);margin:0;}
 @media (max-width:600px){.panel{padding:2rem 1.4rem;}.panel h1{font-size:23px;}.panel p{font-size:16px;}}
+
+/* ---------- LANGUAGE TOGGLE ---------- */
+.lang-toggle{max-width:var(--max-read);margin:0.5rem auto 0;padding:0 1.5rem;display:flex;gap:8px;justify-content:center;}
+.lang-btn{font-family:'Noto Sans Telugu',sans-serif;font-size:13px;padding:6px 16px;border-radius:999px;border:1px solid rgba(147,164,187,0.35);background:transparent;color:var(--mist);cursor:pointer;}
+.lang-btn.is-active{background:var(--gold);border-color:var(--gold);color:#0a0f1a;font-weight:600;}
+.lang-en{display:none;}
+body.show-en .lang-en{display:block;}
+body.show-en .lang-te{display:none;}
+body.show-en h1.lang-en{display:block;}
+.untranslated-note{font-style:italic;color:var(--ink-soft) !important;text-align:center !important;}
 `;
 
 function buildStoryPage(story) {
   let navPills = "", episodeSections = "", upcomingCards = "";
+  const hasEnglish = story.episodes.some(ep => (ep.bodyEn || "").trim().length > 0);
+
   story.episodes.forEach((ep, i) => {
     const num = i + 1;
     const isPublished = ep.status === "published";
     navPills += `<span class="ep-pill ${isPublished ? "is-live" : "is-locked"}">ఎపిసోడ్ ${num}${isPublished ? "" : " · త్వరలో"}</span>\n`;
     if (isPublished) {
+      const titleEn = (ep.titleEn || "").trim() || ep.title;
+      const bylineEn = (ep.bylineEn || "").trim() || ep.byline || "";
+      const hasBodyEn = (ep.bodyEn || "").trim().length > 0;
       episodeSections += `
       <div class="panel" id="ep-${num}">
-        <p class="ep-label">ఎపిసోడ్ ${num}</p>
-        <h1>${ep.title}</h1>
-        ${ep.byline ? `<p class="byline">${ep.byline}</p>` : ``}
-        ${renderBody(ep.body)}
+        <p class="ep-label lang-te">ఎపిసోడ్ ${num}</p>
+        <p class="ep-label lang-en">Episode ${num}</p>
+        <h1 class="lang-te">${ep.title}</h1>
+        <h1 class="lang-en">${titleEn}</h1>
+        ${ep.byline ? `<p class="byline lang-te">${ep.byline}</p>` : ``}
+        ${bylineEn ? `<p class="byline lang-en">${bylineEn}</p>` : ``}
+        <div class="lang-te">${renderBody(ep.body)}</div>
+        <div class="lang-en">${hasBodyEn ? renderBody(ep.bodyEn) : `<p class="untranslated-note">This episode isn't translated into English yet.</p>`}</div>
       </div>\n`;
     } else {
       upcomingCards += `
@@ -107,6 +126,24 @@ function buildStoryPage(story) {
       </div>\n`;
     }
   });
+
+  const langToggle = hasEnglish ? `
+  <div class="lang-toggle">
+    <button type="button" class="lang-btn is-active" data-lang="te">తెలుగు</button>
+    <button type="button" class="lang-btn" data-lang="en">English</button>
+  </div>
+  <script>
+    (function(){
+      var btns = document.querySelectorAll('.lang-btn');
+      btns.forEach(function(b){
+        b.addEventListener('click', function(){
+          var lang = b.getAttribute('data-lang');
+          document.body.classList.toggle('show-en', lang === 'en');
+          btns.forEach(function(x){ x.classList.toggle('is-active', x === b); });
+        });
+      });
+    })();
+  </script>` : "";
 
   return `<!DOCTYPE html>
 <html lang="te">
@@ -122,6 +159,7 @@ ${FONT_LINK}
 ${nav("../")}
 <div class="hero"><img src="..${story.poster}" alt="Poster for ${story.title}"></div>
 <div class="meta">${story.tags.map(t => `<span class="tag">${t}</span>`).join('<span class="sep">·</span>')}</div>
+${langToggle}
 <div class="ep-nav">${navPills}</div>
 <div class="panel-wrap">${episodeSections}</div>
 <div class="upcoming"><h3>రాబోయే ఎపిసోడ్‌లు</h3><div class="ep-grid">${upcomingCards}</div></div>
