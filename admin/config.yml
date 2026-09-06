@@ -26,37 +26,4 @@ collections:
         name: "tags"
         widget: "list"
         default: ["కథ"]
-      - { label: "One-line hook (shown on home page card)", name: "hook", widget: "text" }
-      - label: "Episodes"
-        name: "episodes"
-        widget: "list"
-        summary: "{{title}} — {{fields.status}}"
-        fields:
-          - { label: "Episode Title", name: "title", widget: "string" }
-          - label: "Status"
-            name: "status"
-            widget: "select"
-            options: ["locked", "published"]
-            default: "locked"
-          - { label: "Byline (usually only Episode 1)", name: "byline", widget: "string", required: false, default: "" }
-          - label: "Episode Text"
-            name: "body"
-            widget: "text"
-            hint: "Separate paragraphs with a blank line. Type ---  on its own line for a section divider."
-
-  - name: "site"
-    label: "సైట్ సెట్టింగ్‌లు (Site Settings)"
-    files:
-      - name: "general"
-        label: "General"
-        file: "content/site.json"
-        fields:
-          - { label: "Brand name (nav bar)", name: "brand", widget: "string" }
-          - { label: "Kicker (small line above headline)", name: "kicker", widget: "string" }
-          - { label: "Headline — line 1", name: "heroLine1", widget: "string" }
-          - { label: "Headline — line 2", name: "heroLine2", widget: "string" }
-          - { label: "Subtext under headline", name: "heroSub", widget: "text" }
-          - { label: "Author name", name: "authorName", widget: "string" }
-          - label: "About page bio paragraphs"
-            name: "aboutBio"
-            widget: "list"
+      - { label: "One-line hook (shown
